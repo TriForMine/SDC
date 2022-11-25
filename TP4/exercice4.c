@@ -105,11 +105,12 @@ char est_paire(Element* x) {
     return x->contenu % 2 == 0;
 }
 
-void remove_impaire(Liste* l) {
-    if (!est_vide(l)) {
-        Element* e = premier(l);
-        while (e != l->sentinelle) {
+void remove_impaire(Liste* L1, Liste* L2) {
+    if (!est_vide(L1)) {
+        Element* e = premier(L1);
+        while (e != L1->sentinelle) {
             if (!est_paire(e)) {
+                ajouter_apres(e, dernier(L2), L2);
                 supprimer(e);
             }
             e = e->suivant;
@@ -120,23 +121,39 @@ void remove_impaire(Liste* l) {
 int main (void) {
     Element* e, *e2, *e3, *e4;
     Liste* l = malloc(sizeof(Liste));
+    Liste* l2 = malloc(sizeof(Liste));
+
     l->sentinelle = malloc(sizeof(Element));
     l->sentinelle->suivant = l->sentinelle;
     l->sentinelle->precedent = l->sentinelle;
     l->num = 0;
+
+    l2->sentinelle = malloc(sizeof(Element));
+    l2->sentinelle->suivant = l->sentinelle;
+    l2->sentinelle->precedent = l->sentinelle;
+    l2->num = 0;
+
     e = malloc(sizeof(Element));
     e->contenu = 1;
+    e->suivant = NULL;
+    e->precedent = NULL;
     ajouter_en_tete(e, l);
     e2 = malloc(sizeof(Element));
     e2->contenu = 2;
+    e2->suivant = NULL;
+    e2->precedent = NULL;
     ajouter_apres(e2, e, l);
     e3 = malloc(sizeof(Element));
     e3->contenu = 3;
+    e3->suivant = NULL;
+    e3->precedent = NULL;
     ajouter_apres(e3, e2, l);
     e4 = malloc(sizeof(Element));
     e4->contenu = 4;
+    e4->suivant = NULL;
+    e4->precedent = NULL;
 
-    remove_impaire(l);
+    remove_impaire(l, l2);
 
     for (e = premier(l); e != l->sentinelle; e = e->suivant) {
         printf("%d", e->contenu);
