@@ -81,20 +81,66 @@ int longueur(Liste* l) {
     return l->num;
 }
 
+void ajouter_fin(Liste* L1, Liste* l2) {
+    if (!est_vide(l2)) {
+        Element* e = premier(l2);
+        while (e != l2->sentinelle) {
+            ajouter_apres(e, dernier(L1), L1);
+            e = e->suivant;
+        }
+    }
+}
+
+void ajouter_debut(Liste* L1, Liste* L2) {
+    if (!est_vide(L2)) {
+        Element* e = dernier(L2);
+        while (e != L2->sentinelle) {
+            ajouter_en_tete(e, L1);
+            e = e->precedent;
+        }
+    }
+}
+
+char est_paire(Element* x) {
+    return x->contenu % 2 == 0;
+}
+
+void remove_impaire(Liste* l) {
+    if (!est_vide(l)) {
+        Element* e = premier(l);
+        while (e != l->sentinelle) {
+            if (!est_paire(e)) {
+                supprimer(e);
+            }
+            e = e->suivant;
+        }
+    }
+}
+
 int main (void) {
-    Liste l;
-    Element e1;
+    Element* e, *e2, *e3, *e4;
+    Liste* l = malloc(sizeof(Liste));
+    l->sentinelle = malloc(sizeof(Element));
+    l->sentinelle->suivant = l->sentinelle;
+    l->sentinelle->precedent = l->sentinelle;
+    l->num = 0;
+    e = malloc(sizeof(Element));
+    e->contenu = 1;
+    ajouter_en_tete(e, l);
+    e2 = malloc(sizeof(Element));
+    e2->contenu = 2;
+    ajouter_apres(e2, e, l);
+    e3 = malloc(sizeof(Element));
+    e3->contenu = 3;
+    ajouter_apres(e3, e2, l);
+    e4 = malloc(sizeof(Element));
+    e4->contenu = 4;
 
-    l.sentinelle = &e1;
-    l.num = 0;
+    remove_impaire(l);
 
-    printf("Est vide: %d\n", est_vide(&l));
-
-    e1.contenu = 1;
-    e1.suivant = NULL;
-    ajouter_en_tete(&e1, &l);
-    printf("Liste de longueur %d\n", longueur(&l));
-    printf("Est vide: %d\n", est_vide(&l));
+    for (e = premier(l); e != l->sentinelle; e = e->suivant) {
+        printf("%d", e->contenu);
+    }
 
     return 0;
 }
