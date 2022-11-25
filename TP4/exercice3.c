@@ -10,7 +10,7 @@ struct element {
 typedef struct element Element;
 
 struct liste {
-    Element* premier;
+    Element* sentinelle;
     int num;
 };
 
@@ -29,19 +29,23 @@ Element* precedent(Element* e) {
 }
 
 Element* premier(Liste* l) {
-    return l->premier;
+    return l->sentinelle->suivant;
+}
+
+Element* dernier(Liste* l) {
+    return l->sentinelle->precedent;
 }
 
 int est_vide(Liste* l) {
-    return l->premier == NULL;
+    return l->sentinelle->suivant == l->sentinelle;
 }
 
 void supprimer_premier(Liste* l) {
     if (!est_vide(l)) {
-        Element* a_supprimer = l->premier;
-        l->premier = l->premier->suivant;
-        --l->num;
-        free(a_supprimer);
+        Element* e = premier(l);
+        l->sentinelle->suivant = e->suivant;
+        e->suivant->precedent = l->sentinelle;
+        free(e);
     }
 }
 
@@ -52,32 +56,24 @@ void vider(Liste* l) {
 }
 
 void ajouter_en_tete(Element* x, Liste* l) {
-    x->suivant = l->premier;
-    x->precedent = NULL;
-    if (l->premier != NULL) {
-        l->premier->precedent = x;
-    }
-    l->premier = x;
+    x->suivant = l->sentinelle->suivant;
+    x->precedent = l->sentinelle;
+    l->sentinelle->suivant = x;
+    x->suivant->precedent = x;
     ++l->num;
 }
 
 void ajouter_apres(Element* x, Element* y, Liste* l) {
     x->suivant = y->suivant;
     x->precedent = y;
-    if (y->suivant != NULL) {
-        y->suivant->precedent = x;
-    }
     y->suivant = x;
+    x->suivant->precedent = x;
     ++l->num;
 }
 
 void supprimer(Element* x) {
-    if (x->precedent != NULL) {
-        x->precedent->suivant = x->suivant;
-    }
-    if (x->suivant != NULL) {
-        x->suivant->precedent = x->precedent;
-    }
+    x->precedent->suivant = x->suivant;
+    x->suivant->precedent = x->precedent;
     free(x);
 }
 
@@ -89,7 +85,9 @@ int main (void) {
     Liste l;
     Element e1;
 
-    l.premier = NULL;
+    l.sentinelle = &e1;
+    l.num = 0;
+
     printf("Est vide: %d\n", est_vide(&l));
 
     e1.contenu = 1;
